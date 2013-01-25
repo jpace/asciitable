@@ -1,4 +1,4 @@
-ANSIITable - An ASCII table
+ASCIITable - An ASCII table
 ============================================================
 
 ## DESCRIPTION
@@ -7,6 +7,6 @@ A simple table for the console.
 
 ## CLASSES
 
-### ANSIITable
+### ASCIITable
 
 This class prints a spreadsheet-like table of data.

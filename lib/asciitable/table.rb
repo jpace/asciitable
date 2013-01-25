@@ -2,7 +2,6 @@
 # -*- ruby -*-
 
 require 'rubygems'
-require 'riel'
 require 'riel/log'
 require 'asciitable/cell'
 require 'asciitable/column'
@@ -16,7 +15,21 @@ module ASCIITable
     def fields
     end
     
-    def value key, field
+    def value key, field, index = 0
+    end
+  end
+
+  class DefaultTableData
+    attr_reader :keys
+    attr_reader :values
+
+    def initialize 
+      @keys = Array.new
+      @values = Hash.new
+    end
+    
+    def value key, field, index = 0
+      @values[key][field]
     end
   end
 
