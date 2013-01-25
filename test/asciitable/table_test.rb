@@ -1,13 +1,12 @@
 #!/usr/bin/ruby -w
 # -*- ruby -*-
 
-require 'rubygems'
-require 'test/unit'
 require 'asciitable/table'
-require 'stringio'
+require 'asciitable/data'
+require 'asciitable/tc'
 
 module ASCIITable
-  class TableTest < Test::Unit::TestCase
+  class TableTest < TestCase
     class DogData < DefaultTableData
       def initialize 
         super
@@ -185,20 +184,6 @@ module ASCIITable
       run_output_test(expected) do
         table.print
       end
-    end
-
-    def test_default_table_data_keys
-      dtd = DefaultTableData.new
-      dtd.keys << "alpha"
-      dtd.keys << "bravo"
-      assert_equal %w{ alpha bravo }, dtd.keys
-    end
-
-    def test_default_table_data_values
-      dtd = DefaultTableData.new
-      dtd.values["alpha"] = { :old => 'able' }
-      dtd.values["bravo"] = { :old => 'baker' }
-      assert_equal 'able', dtd.value("alpha", :old)
     end
   end
 end

@@ -1,10 +1,8 @@
 #!/usr/bin/ruby -w
 # -*- ruby -*-
 
-require 'rubygems'
-require 'test/unit'
 require 'asciitable/cell'
-require 'stringio'
+require 'asciitable/tc'
 
 module ASCIITable
   class CellTest < Test::Unit::TestCase
