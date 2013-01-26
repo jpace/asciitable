@@ -8,19 +8,25 @@ require 'asciitable/column'
 require 'asciitable/row'
 require 'asciitable/data'
 
+# Log.level = Log::DEBUG
+
 module ASCIITable
   class Table
     include Loggable
 
-    def initialize args
+    attr_reader :data
+
+    def initialize data, args = Hash.new
       @cells = Array.new
+
+      @data = data
       
       @cellwidth = args[:cellwidth] || 12
       @align = args[:align] || :left
       @columns = Array.new
       @separator_rows = Hash.new
       @default_value = args[:default_value] || ""
-
+      
       set_headings
       set_cells
 
@@ -87,7 +93,7 @@ module ASCIITable
     end
 
     def find_cell col, row
-      @cells.detect { |c| c.row == row && c.column == col }
+      @cells.detect { |c| c.column == col && c.row == row }
     end
 
     def cell col, row
@@ -118,11 +124,7 @@ module ASCIITable
       @columns[col] ||= Column.new(self, col, @cellwidth, @align)
     end
 
-    def set_cellspan fromcol, tocol, row
-      cell(fromcol, row).span = tocol
-    end
-
-    def set col, row, val
+    def set_value col, row, val
       cell(col, row).value = val
     end
 
@@ -161,7 +163,7 @@ module ASCIITable
     end
 
     def data_cells_for_row row, offset
-      cells_for_row row, offset, fields.length * data_cell_span
+      cells_for_row row, offset, @data.fields.length * data_cell_span
     end
 
     def get_highlight_colors 
@@ -211,14 +213,16 @@ module ASCIITable
       cellspan = data_cell_span
 
       colidx = 0
-      set colidx, 0, headings[0]
+      set_value colidx, 0, headings[0]
 
       colidx += 1
 
       (1 ... headings.length).each do |hi|
-        set colidx, 0, headings[hi]
+        set_value colidx, 0, headings[hi]
         if cellspan > 1
-          set_cellspan colidx, colidx - 1 + cellspan, 0
+          fromcol = colidx
+          tocol = colidx - 1 + cellspan
+          cell(fromcol, 0).span = tocol
         end
         colidx += cellspan
       end
@@ -232,7 +236,7 @@ module ASCIITable
         (0 .. (data_cell_span - 1)).each do |offset|
           rowcells = cells_for_row row, offset, last_data_col
           total = rowcells.collect { |cell| cell.value }.inject(0) { |sum, num| sum + num }
-          set totcol + offset, row, total
+          set_value totcol + offset, row, total
         end
       end
     end
@@ -246,14 +250,17 @@ module ASCIITable
 
     def set_cells
       rownum = 1
-      keys.each_with_index do |name, nidx|
-        set 0, rownum, name
+      dcs = data_cell_span
+      
+      @data.keys.each_with_index do |key, nidx|
+        # left column == key name
+        set_value 0, rownum, key
         
         colidx = 1
-        fields.each do |field|
-          (0 .. (data_cell_span - 1)).each do |didx|
-            val = value name, field, didx
-            set colidx, rownum, val
+        @data.fields.each do |field|
+          (0 .. (dcs - 1)).each do |didx|
+            val = @data.value(key, field, didx) || @default_value
+            set_value colidx, rownum, val
             colidx += 1
           end
         end
@@ -261,28 +268,16 @@ module ASCIITable
       end
     end
 
-    def data
-      nil
-    end
-
-    def keys
-      data.keys
-    end
-
-    def fields
-      data.fields
-    end
-
-    def value key, field, index
-      data.value key, field, index
-    end
-
     def data_rows
       (1 .. keys.length)
     end
 
     def data_columns
-      (1 .. fields.length * data_cell_span)
+      (1 .. @data.fields.length * data_cell_span)
+    end
+
+    def headings
+      [ @data.leftcol ] + @data.fields.collect { |x| x.to_s }
     end
   end
 end
