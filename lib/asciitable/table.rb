@@ -215,22 +215,24 @@ module ASCIITable
 
       headings = [ @data.leftcol ] + @data.fields.collect { |x| x.to_s }
 
+      row = 0
+
       colidx = 0
-      set_value colidx, 0, headings[0]
+      headings.each do |heading|
+        set_value colidx, row, heading
 
-      colidx += 1
-
-      (1 ... headings.length).each do |hi|
-        set_value colidx, 0, headings[hi]
-        if cellspan > 1
+        # column zero doesn't span:
+        if colidx == 0 || cellspan == 1
+          colidx += 1
+        else
           fromcol = colidx
           tocol = colidx - 1 + cellspan
-          cell(fromcol, 0).span = tocol
+          cell(fromcol, row).span = tocol
+          colidx += cellspan
         end
-        colidx += cellspan
       end
     end
-
+    
     def add_total_columns
       last_data_col = data_columns.last
       totcol = last_data_col + 1
