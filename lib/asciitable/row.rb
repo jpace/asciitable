@@ -68,12 +68,16 @@ module ASCIITable
       super table, statrownum
       
       ncolumns = @table.last_column
+
+      $stderr.puts "ncolumns: #{ncolumns}"
       
-      @table.set 0, statrownum, name
-      
-      1.upto(ncolumns - 1) do |col|
+      @table.set_value 0, statrownum, name
+
+      # $$$ this must account for the last column being a stat also, which
+      # shouldn't be used.
+      1.upto(ncolumns) do |col|
         val = calculate col, firstdatarow, lastdatarow
-        @table.set col, statrownum, val
+        @table.set_value col, statrownum, val
       end
     end
 

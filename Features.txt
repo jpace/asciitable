@@ -10,3 +10,4 @@ Fri Jan 25 20:16:23 2013
 
   Added test for data_cell_span.
   Expanded DefaultTableData.
+  Added tests for total and average rows.

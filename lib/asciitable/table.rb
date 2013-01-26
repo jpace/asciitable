@@ -26,6 +26,7 @@ module ASCIITable
       @columns = Array.new
       @separator_rows = Hash.new
       @default_value = args[:default_value] || ""
+      @data_cell_span = args[:data_cell_span] || 1
       
       set_headings
       set_cells
@@ -54,6 +55,10 @@ module ASCIITable
       
       if args[:highlight_max_cells]
         highlight_max_cells
+      end
+
+      if nsep = args[:separators_every]
+        add_separators nsep
       end
     end
 
@@ -163,7 +168,7 @@ module ASCIITable
     end
 
     def data_cells_for_row row, offset
-      cells_for_row row, offset, @data.fields.length * data_cell_span
+      cells_for_row row, offset, @data.fields.length * @data_cell_span
     end
 
     def get_highlight_colors 
@@ -195,7 +200,7 @@ module ASCIITable
 
     def highlight_max_cells
       (1 .. last_row).each do |row|
-        (0 .. (data_cell_span - 1)).each do |offset|
+        (0 .. (@data_cell_span - 1)).each do |offset|
           highlight_cells_in_row row, offset
         end
       end
@@ -205,12 +210,10 @@ module ASCIITable
       end
     end
 
-    def data_cell_span
-      1
-    end
-
     def set_headings
-      cellspan = data_cell_span
+      cellspan = @data_cell_span
+
+      headings = [ @data.leftcol ] + @data.fields.collect { |x| x.to_s }
 
       colidx = 0
       set_value colidx, 0, headings[0]
@@ -233,7 +236,7 @@ module ASCIITable
       totcol = last_data_col + 1
 
       (1 .. last_row).each do |row|
-        (0 .. (data_cell_span - 1)).each do |offset|
+        (0 .. (@data_cell_span - 1)).each do |offset|
           rowcells = cells_for_row row, offset, last_data_col
           total = rowcells.collect { |cell| cell.value }.inject(0) { |sum, num| sum + num }
           set_value totcol + offset, row, total
@@ -245,12 +248,12 @@ module ASCIITable
     def cells_for_row row, offset, maxcol
       cells = cells_in_row row
       cells = cells[1 .. maxcol]
-      cells.select_with_index { |cell, cidx| (cidx % data_cell_span) == offset }
+      cells.select_with_index { |cell, cidx| (cidx % @data_cell_span) == offset }
     end    
 
     def set_cells
       rownum = 1
-      dcs = data_cell_span
+      dcs = @data_cell_span
       
       @data.keys.each_with_index do |key, nidx|
         # left column == key name
@@ -269,15 +272,11 @@ module ASCIITable
     end
 
     def data_rows
-      (1 .. keys.length)
+      (1 .. @data.keys.length)
     end
 
     def data_columns
-      (1 .. @data.fields.length * data_cell_span)
-    end
-
-    def headings
-      [ @data.leftcol ] + @data.fields.collect { |x| x.to_s }
+      (1 .. @data.fields.length * @data_cell_span)
     end
   end
 end
