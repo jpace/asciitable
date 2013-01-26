@@ -44,15 +44,16 @@ module ASCIITable
   end
 
   class BannerRow < Row
-    def initialize table, char
+    def initialize char, col_widths
       @char = char
-      super(table, nil)
+      super(nil, nil)
+      @col_widths = col_widths
     end
 
     def print
-      banner = (0 .. @table.last_column).collect { |col| BannerCell.new(col, 1, @char) }
-      bannervalues = banner.collect_with_index do |bc, col| 
-        width = @table.column_width col
+      banner = (0 ... @col_widths.length).collect { |col| BannerCell.new(col, 1, @char) }
+      bannervalues = banner.collect_with_index do |bc, colidx| 
+        width = @col_widths[colidx]
         bc.formatted_value width, :center
       end
       print_cells bannervalues

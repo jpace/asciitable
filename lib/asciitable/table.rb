@@ -118,7 +118,9 @@ module ASCIITable
     end
 
     def print_banner char = '-'
-      BannerRow.new(self, char).print
+      last_col = last_column
+      col_widths = (0 .. last_col).collect { |col| column_width(col) }
+      BannerRow.new(char, col_widths).print
     end
     
     def print_header
