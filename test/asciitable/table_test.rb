@@ -40,7 +40,7 @@ module ASCIITable
       end
     end
 
-    class TestData < DefaultTableData
+    class NumberData < DefaultTableData
       def initialize 
         super
 
@@ -59,38 +59,16 @@ module ASCIITable
       end
     end
 
-    class TestTable < Table
+    class NumberTable < Table
       attr_reader :data
       
       def initialize 
-        @data = TestData.new
+        @data = NumberData.new
         super Hash.new
       end
 
       def headings
         %w{ number } + @data.fields.collect { |x| x.to_s }
-      end
-    end
-
-    def run_output_test(expected, &blk)
-      origout = $stdout
-      sio = StringIO.new
-      $stdout = sio
-      
-      blk.call
-
-      sio.flush
-      str = sio.string
-      $stdout = origout
-
-      puts "......................................................."
-      puts str
-      puts "......................................................."
-      
-      result = str.split "\n"
-
-      (0 ... [ expected.size, result.size ].max).each do |idx|
-        assert_equal expected[idx], result[idx], "idx: #{idx}"
       end
     end
 
@@ -122,7 +100,7 @@ module ASCIITable
     end
 
     def test_set_separator_row
-      table = TestTable.new
+      table = NumberTable.new
       table.set_separator_row 2
       expected = [
                   "|    number    |   spanish    | description  |",
@@ -139,7 +117,7 @@ module ASCIITable
     end
 
     def test_set_column_align_right
-      table = TestTable.new
+      table = NumberTable.new
       table.set_column_align 2, :right
       expected = [
                   "|    number    |   spanish    | description  |",
@@ -155,7 +133,7 @@ module ASCIITable
     end
 
     def test_set_column_align_center
-      table = TestTable.new
+      table = NumberTable.new
       table.set_column_align 1, :center
       expected = [
                   "|    number    |   spanish    | description  |",
@@ -171,7 +149,7 @@ module ASCIITable
     end
 
     def test_set_column_width
-      table = TestTable.new
+      table = NumberTable.new
       table.set_column_width 2, 11
       expected = [
                   "|    number    |   spanish    | description |",
@@ -179,6 +157,58 @@ module ASCIITable
                   "| zero         | cero         | none        |",
                   "| one          | uno          | single      |",
                   "| two          | dos          | multiple    |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
+    class DecimalData < DefaultTableData
+      def initialize 
+        super
+        add 'odd', 'one', '1', 'three', '3', 'five', '5'
+        add 'even', 'two', '2', 'four', '4', 'six', '6'
+      end
+
+      def add num, astr, anum, bstr, bnum, cstr, cnum
+        keys << num
+        values[num] = { :first => [ astr, anum ], :second => [ bstr, bnum ], :third => [ cstr, cnum ] }
+      end
+      
+      def fields
+        [ :first, :second, :third ]
+      end
+
+      def value key, field, index
+        @values[key][field][index]
+      end
+    end
+
+    class DecimalTable < Table
+      attr_reader :data
+      
+      def initialize 
+        @data = DecimalData.new
+        super Hash.new
+      end
+
+      def headings
+        %w{ name } + @data.fields.collect { |x| x.to_s }
+      end
+
+      def data_cell_span
+        2
+      end
+    end
+    
+    def test_span
+      table = DecimalTable.new
+      expected = [
+                  "|     name     |            first            |           second            |            third            |",
+                  "| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |",
+                  "| odd          | one          | 1            | three        | 3            | five         | 5            |",
+                  "| even         | two          | 2            | four         | 4            | six          | 6            |",
                  ]
 
       run_output_test(expected) do

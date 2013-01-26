@@ -86,8 +86,12 @@ module ASCIITable
       @cells.select { |cell| cell.row == row }
     end
 
+    def find_cell col, row
+      @cells.detect { |c| c.row == row && c.column == col }
+    end
+
     def cell col, row
-      unless cl = @cells.detect { |c| c.row == row && c.column == col }
+      unless cl = find_cell(col, row)
         cl = Cell.new(col, row, @default_value)
         @cells << cl
       end
