@@ -9,35 +9,6 @@ module ASCIITable
   class Row
     include Loggable
     
-    attr_accessor :table
-    attr_accessor :num
-
-    def initialize table, num
-      @table = table
-      @num = num
-    end
-
-    def last_column
-      @table.last_column
-    end
-
-    def print columns, align = nil
-      tocol = @table.cells.last_column
-      col = 0
-      fmtdvalues = Array.new
-      while col <= tocol
-        aln = align || @table.column_align(col)
-        cell = @table.cell(col, @num)
-        width = @table.column_width col
-        fmtdvalues << cell.formatted_value(width, aln)
-        if cell.span
-          col += (cell.span - col)
-        end
-        col += 1
-      end
-      print_cells fmtdvalues
-    end
-
     def print_cells values
       $stdout.puts "| " + values.join(" | ") + " |"
     end
@@ -46,7 +17,6 @@ module ASCIITable
   class BannerRow < Row
     def initialize char, col_widths
       @char = char
-      super(nil, nil)
       @col_widths = col_widths
     end
 
@@ -61,31 +31,27 @@ module ASCIITable
   end
 
   class StatRow < Row
-    def initialize table
-      firstdatarow = table.data_rows.first
-      lastdatarow = table.data_rows.last
-      statrownum = table.cells.last_row + 1
+    attr_reader :values
+    
+    def initialize cells, ndatarows, ncolumns
+      @cells = cells
 
-      super table, statrownum
+      @values = Array.new
+      @values << name
       
-      ncolumns = @table.cells.last_column
-
-      $stderr.puts "ncolumns: #{ncolumns}"
-      
-      @table.set_value 0, statrownum, name
-
       # $$$ this must account for the last column being a stat also, which
       # shouldn't be used.
       1.upto(ncolumns) do |col|
-        val = calculate col, firstdatarow, lastdatarow
-        @table.set_value col, statrownum, val
+        val = calculate(col, ndatarows)
+        @values << val
       end
     end
 
-    def name
-    end
-
-    def calculate col, firstdatarow, lastdatarow
+    def total col, torow
+      @cells.cells_in_column(col).inject(0) do |sum, cell|
+        val = cell.row >= 1 && cell.row <= torow ? cell.value.to_i : 0
+        sum + val
+      end
     end
   end
 
@@ -94,8 +60,8 @@ module ASCIITable
       "total"
     end
 
-    def calculate col, fromrow, torow
-      @table.column(col).total fromrow, torow
+    def calculate col, torow
+      total(col, torow)
     end
   end
 
@@ -104,9 +70,9 @@ module ASCIITable
       "average"
     end
     
-    def calculate col, fromrow, torow
-      nrows = torow + 1 - fromrow
-      total = @table.column(col).total fromrow, torow
+    def calculate col, torow
+      nrows = torow
+      total = total(col, torow)
       total / nrows
     end
   end

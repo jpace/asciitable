@@ -122,7 +122,7 @@ module ASCIITable
     end
 
     def column col
-      @columns[col] ||= Column.new(self, col, @cellwidth, @align)
+      @columns[col] ||= Column.new(col, @cellwidth, @align)
     end
 
     def set_value col, row, val
@@ -133,8 +133,25 @@ module ASCIITable
       cell(col, row).colors = colors
     end
 
+    def get_formatted_values rownum, align = nil
+      tocol = @cells.last_column
+      col = 0
+      fmtdvalues = Array.new
+      while col <= tocol
+        aln = align || column_align(col)
+        cell = cell(col, rownum)
+        width = column_width col
+        fmtdvalues << cell.formatted_value(width, aln)
+        if cell.span
+          col += (cell.span - col)
+        end
+        col += 1
+      end
+      fmtdvalues
+    end
+    
     def print_row row, align = nil
-      Row.new(self, row).print @columns, align
+      Row.new.print_cells get_formatted_values(row, align)
     end
 
     def print_banner char = '-'

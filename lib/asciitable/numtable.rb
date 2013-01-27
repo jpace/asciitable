@@ -13,11 +13,11 @@ module ASCIITable
       if totrow || avgrow
         add_separator_row '='
         if totrow
-          TotalRow.new(self)
+          add_stat_row TotalRow
         end
         
         if avgrow
-          AverageRow.new(self)
+          add_stat_row AverageRow
         end
       end
       
@@ -27,6 +27,14 @@ module ASCIITable
       
       if args[:highlight_max_cells]
         highlight_max_cells
+      end
+    end
+
+    def add_stat_row statrowcls
+      row = statrowcls.new(@cells, data_rows.last, @cells.last_column)
+      statrow = @cells.last_row + 1
+      row.values.each_with_index do |val, idx|
+        set_value(idx, statrow, val)
       end
     end
 
@@ -43,7 +51,7 @@ module ASCIITable
     end
 
     def data_cells_for_row row, offset
-      cells_for_row row, offset, @data.fields.length * @data_cell_span
+      cells_for_row(row, offset, @data.fields.length * @data_cell_span)
     end
 
     def get_highlight_colors 
@@ -51,7 +59,7 @@ module ASCIITable
     end
 
     def highlight_cells_in_row row, offset
-      cells = data_cells_for_row row, offset
+      cells = data_cells_for_row(row, offset)
       highlight_cells cells
     end
 
@@ -76,12 +84,12 @@ module ASCIITable
     def highlight_max_cells
       (1 .. last_row).each do |row|
         (0 .. (@data_cell_span - 1)).each do |offset|
-          highlight_cells_in_row row, offset
+          highlight_cells_in_row(row, offset)
         end
       end
 
       0.upto(1) do |n|
-        highlight_cells_in_column data_columns.last + n
+        highlight_cells_in_column(data_columns.last + n)
       end
     end
     
@@ -91,9 +99,9 @@ module ASCIITable
 
       (1 .. last_row).each do |row|
         (0 .. (@data_cell_span - 1)).each do |offset|
-          rowcells = cells_for_row row, offset, last_data_col
+          rowcells = cells_for_row(row, offset, last_data_col)
           total = rowcells.collect { |cell| cell.value }.inject(0) { |sum, num| sum + num }
-          set_value totcol + offset, row, total
+          set_value(totcol + offset, row, total)
         end
       end
     end
