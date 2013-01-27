@@ -22,7 +22,7 @@ module ASCIITable
     end
 
     def print columns, align = nil
-      tocol = @table.last_column
+      tocol = @table.cells.last_column
       col = 0
       fmtdvalues = Array.new
       while col <= tocol
@@ -64,11 +64,11 @@ module ASCIITable
     def initialize table
       firstdatarow = table.data_rows.first
       lastdatarow = table.data_rows.last
-      statrownum = table.last_row + 1
+      statrownum = table.cells.last_row + 1
 
       super table, statrownum
       
-      ncolumns = @table.last_column
+      ncolumns = @table.cells.last_column
 
       $stderr.puts "ncolumns: #{ncolumns}"
       

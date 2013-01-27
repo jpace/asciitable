@@ -10,83 +10,99 @@ require 'asciitable/data'
 
 module ASCIITable
   class Cells < Array
+    def initialize data
+      @data = data
+      super()
+    end
+
+    def add col, row, value
+      cl = Cell.new(col, row, value)
+      self << cl
+      cl
+    end
+
+    def last_column
+      collect { |cell| cell.column }.max
+    end
+
+    def last_row
+      collect { |cell| cell.row }.max
+    end
+
+    def cells_in_column col
+      select { |cell| cell.column == col }
+    end
+
+    def cells_in_row row
+      select { |cell| cell.row == row }
+    end
+
+    def find_cell col, row
+      detect { |c| c.column == col && c.row == row }
+    end
+
+    def cell col, row, value
+      find_cell(col, row) || add(col, row, value)
+    end
+  end
+
+  class SeparatorRows < Hash
+    # sets a separator for the row preceding +rownum+. Does not change the
+    # coordinates for any other cells.
+    def insert rownum, char = '-'
+      self[rownum] = char
+    end
+
+    def append nrows, char = '-'
+      self[nrows + 1] = char
+    end
+
+    # banner every +nbetween+ rows
+    def add_every nrows, nbetween, char = '-'
+      1.upto((nrows - 1) / nbetween) do |num|
+        insert(1 + num * nbetween, '-')
+      end
+    end
   end
 
   class Table
     include Loggable
 
     attr_reader :data
+    attr_reader :cells
 
     def initialize data, args = Hash.new
-      @cells = Cells.new
+      @cells = Cells.new data
 
       @data = data
       
       @cellwidth = args[:cellwidth] || 12
       @align = args[:align] || :left
       @columns = Array.new
-      @separator_rows = Hash.new
+      @separator_rows = SeparatorRows.new
       @default_value = args[:default_value] || ""
       @data_cell_span = args[:data_cell_span] || 1
       
       set_headings
       set_cells
 
-      if sepival = args[:separators]
-        add_separators sepival
-      end
-      
       if nsep = args[:separators_every]
-        add_separators nsep
+        @separator_rows.add_every(data_rows.last, nsep, '-')
       end
     end
 
     # sets a separator for the row preceding +rownum+. Does not change the
     # coordinates for any other cells.
     def set_separator_row rownum, char = '-'
-      @separator_rows[rownum] = char
+      @separator_rows.insert(rownum, char)
     end
 
     def add_separator_row char = '-'
-      @separator_rows[last_row + 1] = char
-    end
-
-    def add_separators nbetween
-      # banner every N rows
-      drows = data_rows
-
-      drows.first.upto((drows.last - 1) / nbetween) do |num|
-        set_separator_row 1 + num * nbetween, '-'
-      end
-    end
-
-    def last_column
-      @cells.collect { |cell| cell.column }.max
-    end
-
-    def last_row
-      @cells.collect { |cell| cell.row }.max
-    end
-
-    def cells_in_column col
-      @cells.select { |cell| cell.column == col }
-    end
-
-    def cells_in_row row
-      @cells.select { |cell| cell.row == row }
-    end
-
-    def find_cell col, row
-      @cells.detect { |c| c.column == col && c.row == row }
+      @separator_rows.append(@cells.last_row, char)
     end
 
     def cell col, row
-      cl = find_cell(col, row)
-      unless cl
-        cl = Cell.new(col, row, @default_value)
-        @cells << cl
-      end
-      cl
+      @cells.cell(col, row, @default_value)
     end
 
     def set_column_align col, align
@@ -122,7 +138,7 @@ module ASCIITable
     end
 
     def print_banner char = '-'
-      last_col = last_column
+      last_col = @cells.last_column
       col_widths = (0 .. last_col).collect { |col| column_width(col) }
       BannerRow.new(char, col_widths).print
     end
@@ -136,7 +152,7 @@ module ASCIITable
     def print
       print_header
       
-      (1 .. last_row).each do |row|
+      (1 .. @cells.last_row).each do |row|
         if char = @separator_rows[row]
           print_banner char
         end
@@ -153,8 +169,7 @@ module ASCIITable
 
       colidx = 0
       headings.each do |heading|
-        cl = Cell.new(colidx, row, heading)
-        @cells << cl
+        cl = @cells.add(colidx, row, heading)
 
         # column zero doesn't span:
         if colidx == 0 || cellspan == 1
@@ -173,15 +188,13 @@ module ASCIITable
       
       @data.keys.each_with_index do |key, nidx|
         # left column == key name
-        cl = Cell.new(0, rownum, key)
-        @cells << cl
-
+        @cells.add(0, rownum, key)
+        
         colidx = 1
         @data.fields.each do |field|
           (0 .. (dcs - 1)).each do |didx|
             val = @data.value(key, field, didx) || @default_value
-            cl = Cell.new(colidx, rownum, val)
-            @cells << cl
+            @cells.add(colidx, rownum, val)
             colidx += 1
           end
         end

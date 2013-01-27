@@ -19,7 +19,7 @@ module ASCIITable
     end
 
     def total fromrow, torow
-      @table.cells_in_column(@num).inject(0) do |sum, cell|
+      @table.cells.cells_in_column(@num).inject(0) do |sum, cell|
         val = cell.row >= fromrow && cell.row <= torow ? cell.value.to_i : 0
         sum + val
       end

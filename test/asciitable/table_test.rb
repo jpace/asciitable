@@ -47,12 +47,12 @@ module ASCIITable
 
     def test_last_column
       table = Table.new DogData.new
-      assert_equal 2, table.last_column
+      assert_equal 2, table.cells.last_column
     end
 
     def test_last_row
       table = Table.new DogData.new
-      assert_equal 5, table.last_row
+      assert_equal 5, table.cells.last_row
     end
 
     def test_set_separator_row

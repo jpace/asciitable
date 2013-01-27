@@ -37,7 +37,7 @@ module ASCIITable
 
     # returns the cells up to the given column
     def cells_for_row row, offset, maxcol
-      cells = cells_in_row row
+      cells = @cells.cells_in_row row
       cells = cells[1 .. maxcol]
       cells.select_with_index { |cell, cidx| (cidx % @data_cell_span) == offset }
     end
@@ -69,7 +69,7 @@ module ASCIITable
     end
 
     def highlight_cells_in_column col
-      cells = cells_in_column(col)[data_rows.first .. data_rows.last]
+      cells = @cells.cells_in_column(col)[data_rows.first .. data_rows.last]
       highlight_cells cells
     end
 
