@@ -83,9 +83,11 @@ module ASCIITable
 
     def formatted_value width, align
       str = super
+
       @colors.each do |cl|
         str = str.color cl
       end
+
       str
     end
   end

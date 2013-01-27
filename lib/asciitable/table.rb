@@ -10,13 +10,14 @@ require 'asciitable/data'
 
 module ASCIITable
   class Cells < Array
-    def initialize data
+    def initialize cellcls, data
+      @cellcls = cellcls
       @data = data
       super()
     end
 
     def add col, row, value
-      cl = Cell.new(col, row, value)
+      cl = @cellcls.new(col, row, value)
       self << cl
       cl
     end
@@ -72,7 +73,7 @@ module ASCIITable
     attr_reader :cells
 
     def initialize data, args = Hash.new
-      @cells = Cells.new data
+      @cells = Cells.new cell_class, data
 
       @data = data
       
@@ -89,6 +90,10 @@ module ASCIITable
       if nsep = args[:separators_every]
         @separator_rows.add_every(data_rows.last, nsep, '-')
       end
+    end
+
+    def cell_class
+      Cell
     end
 
     # sets a separator for the row preceding +rownum+. Does not change the
@@ -225,6 +230,10 @@ module ASCIITable
 
     def data_columns
       (1 .. @data.fields.length * @data_cell_span)
+    end
+
+    def create_cell col, row, value
+      Cell.new 
     end
   end
 end

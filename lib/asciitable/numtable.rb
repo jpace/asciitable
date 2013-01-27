@@ -10,6 +10,8 @@ module ASCIITable
       totrow = args[:has_total_row]
       avgrow = args[:has_average_row]
 
+      @highlight_colors = args[:highlight_colors] || Array.new
+
       if totrow || avgrow
         add_separator_row '='
         if totrow
@@ -25,8 +27,8 @@ module ASCIITable
         add_total_columns
       end
       
-      if args[:highlight_max_cells]
-        highlight_max_cells
+      if args[:highlight_max_cells_in_columns]
+        highlight_max_cells_in_columns
       end
     end
 
@@ -54,10 +56,6 @@ module ASCIITable
       cells_for_row(row, offset, @data.fields.length * @data_cell_span)
     end
 
-    def get_highlight_colors 
-      Array.new
-    end
-
     def highlight_cells_in_row row, offset
       cells = data_cells_for_row(row, offset)
       highlight_cells cells
@@ -66,12 +64,12 @@ module ASCIITable
     def highlight_cells cells
       vals = sort_values cells
 
-      colors = get_highlight_colors
-      
+      colors = @highlight_colors
+
       cells.each do |cell|
         idx = vals.index cell.value
         if cols = colors[idx]
-          cell.colors = cols
+          cell.colors = [ cols ]
         end
       end
     end
@@ -81,29 +79,40 @@ module ASCIITable
       highlight_cells cells
     end
 
-    def highlight_max_cells
-      (1 .. last_row).each do |row|
+    def highlight_max_cells_in_rows
+      (1 .. @cells.last_row).each do |row|
         (0 .. (@data_cell_span - 1)).each do |offset|
           highlight_cells_in_row(row, offset)
         end
       end
+    end
 
-      0.upto(1) do |n|
+    def highlight_max_cells_in_columns
+      0.upto(0) do |n|
         highlight_cells_in_column(data_columns.last + n)
       end
+    end
+    
+    def highlight_max_cells
+      highlight_max_cells_in_rows
+      highlight_max_cells_in_columns
     end
     
     def add_total_columns
       last_data_col = data_columns.last
       totcol = last_data_col + 1
 
-      (1 .. last_row).each do |row|
+      (1 .. @cells.last_row).each do |row|
         (0 .. (@data_cell_span - 1)).each do |offset|
           rowcells = cells_for_row(row, offset, last_data_col)
           total = rowcells.collect { |cell| cell.value }.inject(0) { |sum, num| sum + num }
           set_value(totcol + offset, row, total)
         end
       end
+    end
+    
+    def cell_class
+      ColorCell
     end
   end
 end
