@@ -9,13 +9,16 @@ require 'asciitable/row'
 require 'asciitable/data'
 
 module ASCIITable
+  class Cells < Array
+  end
+
   class Table
     include Loggable
 
     attr_reader :data
 
     def initialize data, args = Hash.new
-      @cells = Array.new
+      @cells = Cells.new
 
       @data = data
       
@@ -78,7 +81,8 @@ module ASCIITable
     end
 
     def cell col, row
-      unless cl = find_cell(col, row)
+      cl = find_cell(col, row)
+      unless cl
         cl = Cell.new(col, row, @default_value)
         @cells << cl
       end
@@ -149,26 +153,19 @@ module ASCIITable
 
       colidx = 0
       headings.each do |heading|
-        set_value colidx, row, heading
+        cl = Cell.new(colidx, row, heading)
+        @cells << cl
 
         # column zero doesn't span:
         if colidx == 0 || cellspan == 1
           colidx += 1
         else
-          fromcol = colidx
           tocol = colidx - 1 + cellspan
-          cell(fromcol, row).span = tocol
+          cl.span = tocol
           colidx += cellspan
         end
       end
     end
-
-    # returns the cells up to the given column
-    def cells_for_row row, offset, maxcol
-      cells = cells_in_row row
-      cells = cells[1 .. maxcol]
-      cells.select_with_index { |cell, cidx| (cidx % @data_cell_span) == offset }
-    end    
 
     def set_cells
       rownum = 1
@@ -176,13 +173,15 @@ module ASCIITable
       
       @data.keys.each_with_index do |key, nidx|
         # left column == key name
-        set_value 0, rownum, key
-        
+        cl = Cell.new(0, rownum, key)
+        @cells << cl
+
         colidx = 1
         @data.fields.each do |field|
           (0 .. (dcs - 1)).each do |didx|
             val = @data.value(key, field, didx) || @default_value
-            set_value colidx, rownum, val
+            cl = Cell.new(colidx, rownum, val)
+            @cells << cl
             colidx += 1
           end
         end

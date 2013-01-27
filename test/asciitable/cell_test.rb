@@ -29,8 +29,9 @@ module ASCIITable
     end
 
     def test_formatted_value_span
-      @cell.span = 4
-      assert_equal "val                ", @cell.formatted_value(8, :left)
+      cell = Cell.new 3, 7, "val"
+      cell.span = 4
+      assert_equal "val                ", cell.formatted_value(8, :left)
     end
 
     def test_invalid_align
