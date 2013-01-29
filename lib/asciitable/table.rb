@@ -73,7 +73,7 @@ module ASCIITable
     attr_reader :cells
 
     def initialize data, args = Hash.new
-      @cells = Cells.new cell_class, data
+      @cells = Cells.new Cell, data
 
       @data = data
       
@@ -90,10 +90,6 @@ module ASCIITable
       if nsep = args[:separators_every]
         @separator_rows.add_every(data_rows.last, nsep, '-')
       end
-    end
-
-    def cell_class
-      Cell
     end
 
     # sets a separator for the row preceding +rownum+. Does not change the

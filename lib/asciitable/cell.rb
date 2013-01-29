@@ -14,28 +14,19 @@ module ASCIITable
 
     attr_accessor :value
     attr_accessor :span
-    
-    class << self
-      alias orig_new new
 
-      def new column, row, value = nil, *colors
-        if colors.size > 0
-          ColorCell.orig_new column, row, value, *colors
-        else
-          orig_new column, row, value
-        end
-      end
-    end
+    attr_accessor :colors
 
-    def initialize column, row, value = nil
+    def initialize column, row, value = nil, *colors
       @column = column
       @row = row
       @value = value
       @span = span
+      @colors = colors
     end
 
     def _value width
-      value.nil? ? "" : value.to_s
+      value.nil? ? nil : value.to_s
     end
 
     def inspect
@@ -69,25 +60,12 @@ module ASCIITable
                    raise "alignment '#{align}' not handled; valid alignments: :left, :right, :center"
                  end
 
-      (" " * lhs) + strval + (" " * rhs)
-    end
-  end
-
-  class ColorCell < Cell
-    attr_accessor :colors
-
-    def initialize column, row, value = nil, *colors
-      super column, row, value
-      @colors = colors
-    end
-
-    def formatted_value width, align
-      str = super
+      str = (" " * lhs) + strval + (" " * rhs)
 
       @colors.each do |cl|
         str = str.color cl
       end
-
+      
       str
     end
   end

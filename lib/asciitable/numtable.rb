@@ -110,9 +110,5 @@ module ASCIITable
         end
       end
     end
-    
-    def cell_class
-      ColorCell
-    end
   end
 end

@@ -19,3 +19,8 @@ Sat Jan 26 12:22:32 2013
 Sun Jan 27 13:29:50 2013
 
   Added test for highlighting max values in columns.
+
+Mon Jan 28 20:00:38 2013
+
+  Added test for Table.set_color.
+  Added test for cell value.to_s.

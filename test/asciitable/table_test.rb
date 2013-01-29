@@ -5,6 +5,8 @@ require 'asciitable/table'
 require 'asciitable/data'
 require 'asciitable/tc'
 
+Sickill::Rainbow.enabled = true
+
 module ASCIITable
   class TableTest < TestCase
     class DogData < DefaultTableData
@@ -18,7 +20,7 @@ module ASCIITable
       end
     end
 
-    class NumberData < DefaultTableData
+    class EngSpanNumData < DefaultTableData
       def initialize 
         super 'number', :spanish, :description
 
@@ -56,7 +58,7 @@ module ASCIITable
     end
 
     def test_set_separator_row
-      table = Table.new NumberData.new
+      table = Table.new EngSpanNumData.new
       table.set_separator_row 2
       expected = [
                   "|    number    |   spanish    | description  |",
@@ -73,7 +75,7 @@ module ASCIITable
     end
 
     def test_set_column_align_right
-      table = Table.new NumberData.new
+      table = Table.new EngSpanNumData.new
       table.set_column_align 2, :right
       expected = [
                   "|    number    |   spanish    | description  |",
@@ -89,7 +91,7 @@ module ASCIITable
     end
 
     def test_set_column_align_center
-      table = Table.new NumberData.new
+      table = Table.new EngSpanNumData.new
       table.set_column_align 1, :center
       expected = [
                   "|    number    |   spanish    | description  |",
@@ -105,7 +107,7 @@ module ASCIITable
     end
 
     def test_set_column_width
-      table = Table.new NumberData.new
+      table = Table.new EngSpanNumData.new
       table.set_column_width 2, 11
       expected = [
                   "|    number    |   spanish    | description |",
@@ -113,6 +115,28 @@ module ASCIITable
                   "| zero         | cero         | none        |",
                   "| one          | uno          | single      |",
                   "| two          | dos          | multiple    |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
+    class NumericData < DefaultTableData
+      def initialize 
+        super 'type', :first, :second, :third
+        add 'odd', 1, 2, 3
+        add 'even', 2, 4, 6
+      end
+    end
+    
+    def test_cell_to_s
+      table = Table.new NumericData.new
+      expected = [
+                  "|     type     |    first     |    second    |    third     |",
+                  "| ------------ | ------------ | ------------ | ------------ |",
+                  "| odd          | 1            | 2            | 3            |",
+                  "| even         | 2            | 4            | 6            |",
                  ]
 
       run_output_test(expected) do
@@ -151,7 +175,7 @@ module ASCIITable
         super 'scores', :first, :second, :third
         @keys << 'Indiana'
         inscores = @values['Indiana'] = Hash.new
-        inscores[:first] = '104'
+        inscores[:first] =  '104'
         inscores[:third] = '82'
 
         @keys << 'Illinois'
@@ -176,7 +200,7 @@ module ASCIITable
     end
     
     def test_default_value_set
-      table = Table.new UnsetData.new, { :default_value => 53 }
+      table = Table.new UnsetData.new, { :default_value => '53' }
       expected = [
                   "|    scores    |    first     |    second    |    third     |",
                   "| ------------ | ------------ | ------------ | ------------ |",
@@ -193,7 +217,7 @@ module ASCIITable
       def initialize 
         super 'number', :value
         %w{ zero one two three four five six seven eight }.each_with_index do |number, idx|
-          add number, idx
+          add number, idx.to_s
         end
       end
     end
@@ -214,6 +238,22 @@ module ASCIITable
                   "| six          | 6            |",
                   "| seven        | 7            |",
                   "| eight        | 8            |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
+    def xxtest_set_color
+      table = Table.new UnsetData.new
+      table.set_color 3, 1, :red
+      table.set_color 3, 2, "ff7f00"
+      expected = [
+                  "|    scores    |    first     |    second    |    third     |",
+                  "| ------------ | ------------ | ------------ | ------------ |",
+                  "| Indiana      | 104          |              | [31m82[0m           |",
+                  "| Illinois     |              | 71           | [38;5;208m64[0m           |",
                  ]
 
       run_output_test(expected) do
