@@ -245,15 +245,47 @@ module ASCIITable
       end
     end
 
-    def xxtest_set_color
+    def test_set_color
       table = Table.new UnsetData.new
       table.set_color 3, 1, :red
       table.set_color 3, 2, "ff7f00"
       expected = [
                   "|    scores    |    first     |    second    |    third     |",
                   "| ------------ | ------------ | ------------ | ------------ |",
-                  "| Indiana      | 104          |              | [31m82[0m           |",
-                  "| Illinois     |              | 71           | [38;5;208m64[0m           |",
+                  "| Indiana      | 104          |              | [31m82          [0m |",
+                  "| Illinois     |              | 71           | [38;5;208m64          [0m |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
+    def test_set_background_color
+      table = Table.new UnsetData.new
+      table.set_color 3, 1, :on_red
+      table.set_color 3, 2, "on_ff7f00"
+      expected = [
+                  "|    scores    |    first     |    second    |    third     |",
+                  "| ------------ | ------------ | ------------ | ------------ |",
+                  "| Indiana      | 104          |              | [41m82          [0m |",
+                  "| Illinois     |              | 71           | [48;5;208m64          [0m |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
+    def test_set_background_foreground_colors
+      table = Table.new UnsetData.new
+      table.set_color 3, 1, :red, :on_white
+      table.set_color 3, 2, "ff7f00", :on_black
+      expected = [
+                  "|    scores    |    first     |    second    |    third     |",
+                  "| ------------ | ------------ | ------------ | ------------ |",
+                  "| Indiana      | 104          |              | [31m[47m82          [0m |",
+                  "| Illinois     |              | 71           | [38;5;208m[40m64          [0m |",
                  ]
 
       run_output_test(expected) do

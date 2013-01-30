@@ -37,6 +37,20 @@ module ASCIITable
       "(#{@column}, #{@row}) => #{@value}"
     end
 
+    def get_background_color color
+      md = color.to_s.match(Regexp.new('^on_(\w+)'))
+      md && md[1]
+    end
+
+    def background? color
+      if color.kind_of? Symbol
+        bg = get_background_color(color)
+        bg && bg.to_sym
+      else
+        get_background_color(color)
+      end
+    end
+
     def formatted_value width, align
       strval = _value width
 
@@ -63,7 +77,11 @@ module ASCIITable
       str = (" " * lhs) + strval + (" " * rhs)
 
       @colors.each do |cl|
-        str = str.color cl
+        if bg = background?(cl)
+          str = str.background(bg)
+        else
+          str = str.color(cl)
+        end
       end
       
       str
