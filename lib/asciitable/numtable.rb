@@ -30,6 +30,10 @@ module ASCIITable
       if args[:highlight_max_cells_in_columns]
         highlight_max_cells_in_columns
       end
+
+      if args[:highlight_max_cells_in_rows]
+        highlight_max_cells_in_rows
+      end
     end
 
     def add_stat_row statrowcls

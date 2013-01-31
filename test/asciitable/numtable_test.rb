@@ -120,5 +120,28 @@ module ASCIITable
         table.print
       end
     end
+
+    class WideNumberData < DefaultTableData
+      def initialize 
+        super 'type', :first, :second, :third, :fourth
+        add :odd, 11, 17, 3, 7
+        add :even, 8, 4, 6, 12
+      end
+    end
+    
+    def test_highlight_max_cells_in_row
+      table = NumericTable.new WideNumberData.new, { :highlight_max_cells_in_rows => true, :highlight_colors => [ :red, :cyan, :magenta ] }
+      
+      expected = [
+                  "|     type     |    first     |    second    |    third     |    fourth    |",
+                  "| ------------ | ------------ | ------------ | ------------ | ------------ |",
+                  "| odd          | [36m11          [0m | [31m17          [0m | 3            | [35m7           [0m |",
+                  "| even         | [36m8           [0m | 4            | [35m6           [0m | [31m12          [0m |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
   end
 end
