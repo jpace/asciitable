@@ -57,7 +57,7 @@ module ASCIITable
       assert_equal 5, table.cells.last_row
     end
 
-    def test_set_separator_row
+    def test_set_separator_row_default
       table = Table.new EngSpanNumData.new
       table.set_separator_row 2
       expected = [
@@ -65,6 +65,23 @@ module ASCIITable
                   "| ------------ | ------------ | ------------ |",
                   "| zero         | cero         | none         |",
                   "| ------------ | ------------ | ------------ |",
+                  "| one          | uno          | single       |",
+                  "| two          | dos          | multiple     |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
+    def test_set_separator_row_specified
+      table = Table.new EngSpanNumData.new
+      table.set_separator_row 2, '*'
+      expected = [
+                  "|    number    |   spanish    | description  |",
+                  "| ------------ | ------------ | ------------ |",
+                  "| zero         | cero         | none         |",
+                  "| ************ | ************ | ************ |",
                   "| one          | uno          | single       |",
                   "| two          | dos          | multiple     |",
                  ]

@@ -1,7 +1,7 @@
-riellibdir = File.dirname(__FILE__)
+libdir = File.dirname(__FILE__)
 
-$:.unshift(riellibdir) unless
-  $:.include?(riellibdir) || $:.include?(File.expand_path(riellibdir))
+$:.unshift(libdir) unless
+  $:.include?(libdir) || $:.include?(File.expand_path(libdir))
 
 module ASCIITable
   VERSION = '0.0.1'

@@ -9,7 +9,7 @@ module ASCIITable
   class Row
     include Loggable
     
-    def print_cells values
+    def print values
       $stdout.puts "| " + values.join(" | ") + " |"
     end
   end
@@ -26,7 +26,7 @@ module ASCIITable
         width = @col_widths[colidx]
         bc.formatted_value width, :center
       end
-      print_cells bannervalues
+      super bannervalues
     end
   end
 

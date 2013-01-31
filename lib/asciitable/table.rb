@@ -7,65 +7,11 @@ require 'asciitable/cell'
 require 'asciitable/column'
 require 'asciitable/row'
 require 'asciitable/data'
+require 'asciitable/separator_rows'
+require 'asciitable/cells'
+require 'asciitable/columns'
 
 module ASCIITable
-  class Cells < Array
-    def initialize cellcls, data
-      @cellcls = cellcls
-      @data = data
-      super()
-    end
-
-    def add col, row, value
-      cl = @cellcls.new(col, row, value)
-      self << cl
-      cl
-    end
-
-    def last_column
-      collect { |cell| cell.column }.max
-    end
-
-    def last_row
-      collect { |cell| cell.row }.max
-    end
-
-    def cells_in_column col
-      select { |cell| cell.column == col }
-    end
-
-    def cells_in_row row
-      select { |cell| cell.row == row }
-    end
-
-    def find_cell col, row
-      detect { |c| c.column == col && c.row == row }
-    end
-
-    def cell col, row, value
-      find_cell(col, row) || add(col, row, value)
-    end
-  end
-
-  class SeparatorRows < Hash
-    # sets a separator for the row preceding +rownum+. Does not change the
-    # coordinates for any other cells.
-    def insert rownum, char = '-'
-      self[rownum] = char
-    end
-
-    def append nrows, char = '-'
-      self[nrows + 1] = char
-    end
-
-    # banner every +nbetween+ rows
-    def add_every nrows, nbetween, char = '-'
-      1.upto((nrows - 1) / nbetween) do |num|
-        insert(1 + num * nbetween, '-')
-      end
-    end
-  end
-
   class Table
     include Loggable
 
@@ -76,10 +22,13 @@ module ASCIITable
       @cells = Cells.new Cell, data
 
       @data = data
+
+      cell_options = args[:cell_options]
       
-      @cellwidth = args[:cellwidth] || 12
-      @align = args[:align] || :left
-      @columns = Array.new
+      cellwidth = args[:cellwidth] || 12
+      align = args[:align] || :left
+      @columns = Columns.new cellwidth, align
+      
       @separator_rows = SeparatorRows.new
       @default_value = args[:default_value] || ""
       @data_cell_span = args[:data_cell_span] || 1
@@ -115,15 +64,15 @@ module ASCIITable
     end
 
     def column_width col
-      ((c = @columns[col]) && c.width) || @cellwidth
+      @columns.column_width(col)
     end
 
     def column_align col
-      ((c = @columns[col]) && c.align) || @align
+      @columns.column_align(col)
     end
 
     def column col
-      @columns[col] ||= Column.new(col, @cellwidth, @align)
+      @columns[col]
     end
 
     def set_value col, row, val
@@ -141,7 +90,7 @@ module ASCIITable
       while col <= tocol
         aln = align || column_align(col)
         cell = cell(col, rownum)
-        width = column_width col
+        width = column_width(col)
         fmtdvalues << cell.formatted_value(width, aln)
         if cell.span
           col += (cell.span - col)
@@ -152,7 +101,8 @@ module ASCIITable
     end
     
     def print_row row, align = nil
-      Row.new.print_cells get_formatted_values(row, align)
+      values = get_formatted_values(row, align)
+      Row.new.print(values)
     end
 
     def print_banner char = '-'
@@ -226,10 +176,6 @@ module ASCIITable
 
     def data_columns
       (1 .. @data.fields.length * @data_cell_span)
-    end
-
-    def create_cell col, row, value
-      Cell.new 
     end
   end
 end
