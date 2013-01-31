@@ -123,6 +123,21 @@ module ASCIITable
       end
     end
 
+    def test_set_cell_align
+      table = Table.new EngSpanNumData.new, { :align => :right }
+      expected = [
+                  "|    number    |   spanish    | description  |",
+                  "| ------------ | ------------ | ------------ |",
+                  "|         zero |         cero |         none |",
+                  "|          one |          uno |       single |",
+                  "|          two |          dos |     multiple |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
     def test_set_column_width
       table = Table.new EngSpanNumData.new
       table.set_column_width 2, 11
@@ -139,6 +154,21 @@ module ASCIITable
       end
     end
 
+    def test_set_cell_width
+      table = Table.new EngSpanNumData.new, { :cellwidth => 16 }
+      expected = [
+                  "|      number      |     spanish      |   description    |",
+                  "| ---------------- | ---------------- | ---------------- |",
+                  "| zero             | cero             | none             |",
+                  "| one              | uno              | single           |",
+                  "| two              | dos              | multiple         |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+    
     class NumericData < DefaultTableData
       def initialize 
         super 'type', :first, :second, :third

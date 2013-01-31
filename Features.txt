@@ -33,3 +33,7 @@ Wed Jan 30 19:53:03 2013
 
   Added test for non-default separator row character.
   Added test for highlight max cells in rows.
+
+Thu Jan 31 17:37:23 2013
+
+  Added test for cell width and alignment.
