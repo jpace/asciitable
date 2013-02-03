@@ -18,19 +18,17 @@ module ASCIITable
     attr_reader :cells
 
     def initialize data, args = Hash.new
-      cell_options = args[:cell_options]
-      
-      cellwidth = args[:cellwidth] || 12
       align = args[:align] || :left
 
-      @columns = Columns.new cellwidth, align
+      cell_options = args[:cell_options] || Hash.new
       
-      @separator_rows = SeparatorRows.new
+      cellwidth = cell_options[:width] || 12
+      default_value = cell_options[:default_value] || ""
+      data_cell_span = cell_options[:span] || 1
 
-      default_value = args[:default_value] || ""
-      @data_cell_span = args[:data_cell_span] || 1
-      
-      @cells = Cells.new Cell, data, @data_cell_span, default_value
+      @columns = Columns.new(cellwidth, align)
+      @separator_rows = SeparatorRows.new
+      @cells = Cells.new(Cell, data, data_cell_span, default_value)
 
       if nsep = args[:separators_every]
         @separator_rows.add_every(@cells.data_rows.last, nsep, '-')

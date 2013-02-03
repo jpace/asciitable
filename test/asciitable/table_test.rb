@@ -155,7 +155,7 @@ module ASCIITable
     end
 
     def test_set_cell_width
-      table = Table.new EngSpanNumData.new, { :cellwidth => 16 }
+      table = Table.new EngSpanNumData.new, { :cell_options => { :width => 16 } }
       expected = [
                   "|      number      |     spanish      |   description    |",
                   "| ---------------- | ---------------- | ---------------- |",
@@ -204,7 +204,7 @@ module ASCIITable
     end
     
     def test_data_cell_span
-      table = Table.new DecimalData.new, { :data_cell_span => 2 }
+      table = Table.new DecimalData.new, { :cell_options => { :span => 2 } }
       expected = [
                   "|     type     |            first            |           second            |            third            |",
                   "| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |",
@@ -247,7 +247,7 @@ module ASCIITable
     end
     
     def test_default_value_set
-      table = Table.new UnsetData.new, { :default_value => '53' }
+      table = Table.new UnsetData.new, { :cell_options => { :default_value => '53' } }
       expected = [
                   "|    scores    |    first     |    second    |    third     |",
                   "| ------------ | ------------ | ------------ | ------------ |",

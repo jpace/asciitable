@@ -7,19 +7,20 @@ module ASCIITable
   class NumericTable < Table
     def initialize data, args = Hash.new
       super
-      totrow = args[:has_total_row]
-      avgrow = args[:has_average_row]
 
       @highlight_colors = args[:highlight_colors] || Array.new
+      
+      totrow = args[:has_total_row]
+      avgrow = args[:has_average_row]
 
       if totrow || avgrow
         add_separator_row '='
         if totrow
-          add_stat_row TotalRow
+          add_stat_row(TotalRow)
         end
         
         if avgrow
-          add_stat_row AverageRow
+          add_stat_row(AverageRow)
         end
       end
       
@@ -51,16 +52,16 @@ module ASCIITable
 
     def highlight_cells_in_row row, offset
       datacells = @cells.cells_for_row(row, offset)
-      highlight_cells datacells
+      highlight_cells(datacells)
     end
 
     def highlight_cells cells
-      vals = sort_values cells
+      vals = sort_values(cells)
 
       colors = @highlight_colors
 
       cells.each do |cell|
-        idx = vals.index cell.value
+        idx = vals.index(cell.value)
         if cols = colors[idx]
           cell.colors = [ cols ]
         end
@@ -74,7 +75,7 @@ module ASCIITable
 
     def highlight_max_cells_in_rows
       (1 .. @cells.last_row).each do |row|
-        (0 .. (@data_cell_span - 1)).each do |offset|
+        (0 .. (@cells.data_cell_span - 1)).each do |offset|
           highlight_cells_in_row(row, offset)
         end
       end
@@ -96,7 +97,7 @@ module ASCIITable
       totcol = last_data_col + 1
 
       (1 .. @cells.last_row).each do |row|
-        (0 .. (@data_cell_span - 1)).each do |offset|
+        (0 .. (@cells.data_cell_span - 1)).each do |offset|
           rowcells = cells_for_row(row, offset, last_data_col)
           total = rowcells.map(&:value).inject(0) { |sum, num| sum + num }
           set_value(totcol + offset, row, total)

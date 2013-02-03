@@ -6,6 +6,8 @@ require 'riel'
 
 module ASCIITable
   class Cells < Array
+    attr_reader :data_cell_span
+    
     def initialize cellcls, data, data_cell_span = 1, default_value = ""
       @cellcls = cellcls
       @data = data
