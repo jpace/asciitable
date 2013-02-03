@@ -15,14 +15,9 @@ module ASCIITable
   class Table
     include Loggable
 
-    attr_reader :data
     attr_reader :cells
 
     def initialize data, args = Hash.new
-      @cells = Cells.new Cell, data
-
-      @data = data
-
       cell_options = args[:cell_options]
       
       cellwidth = args[:cellwidth] || 12
@@ -31,14 +26,14 @@ module ASCIITable
       @columns = Columns.new cellwidth, align
       
       @separator_rows = SeparatorRows.new
-      @default_value = args[:default_value] || ""
+
+      default_value = args[:default_value] || ""
       @data_cell_span = args[:data_cell_span] || 1
       
-      @cells.set_headings @data_cell_span
-      @cells.set_from_data @data_cell_span, @default_value
-      
+      @cells = Cells.new Cell, data, @data_cell_span, default_value
+
       if nsep = args[:separators_every]
-        @separator_rows.add_every(data_rows.last, nsep, '-')
+        @separator_rows.add_every(@cells.data_rows.last, nsep, '-')
       end
     end
 
@@ -53,7 +48,7 @@ module ASCIITable
     end
 
     def cell col, row
-      @cells.cell(col, row, @default_value)
+      @cells.cell(col, row)
     end
 
     def set_column_align col, align
@@ -62,14 +57,6 @@ module ASCIITable
 
     def set_column_width col, width
       column(col).width = width
-    end
-
-    def column_width col
-      @columns.column_width(col)
-    end
-
-    def column_align col
-      @columns.column_align(col)
     end
 
     def column col
@@ -90,12 +77,12 @@ module ASCIITable
       fmtdvalues = Array.new
 
       while col <= tocol
-        aln = align || column_align(col)
+        aln = align || @columns.align(col)
         cell = cell(col, rownum)
-        width = column_width(col)
+        width = @columns.width(col)
         fmtdvalues << cell.formatted_value(width, aln)
         if cell.span
-          col += (cell.span - col)
+          col = cell.span
         end
         col += 1
       end
@@ -110,7 +97,7 @@ module ASCIITable
 
     def print_banner char = '-'
       last_col = @cells.last_column
-      col_widths = (0 .. last_col).collect { |col| column_width(col) }
+      col_widths = (0 .. last_col).collect { |col| @columns.width(col) }
       BannerRow.new(char, col_widths).print
     end
     
@@ -129,14 +116,6 @@ module ASCIITable
         end
         print_row row
       end
-    end
-
-    def data_rows
-      (1 .. @data.keys.length)
-    end
-
-    def data_columns
-      (1 .. @data.fields.length * @data_cell_span)
     end
   end
 end

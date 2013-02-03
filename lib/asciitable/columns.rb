@@ -12,11 +12,11 @@ module ASCIITable
       super()
     end
 
-    def column_width col
+    def width col
       ((c = self[col]) && c.width) || @default_cell_width
     end
 
-    def column_align col
+    def align col
       ((c = self[col]) && c.align) || @default_align
     end
 
