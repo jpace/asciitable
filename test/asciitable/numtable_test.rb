@@ -2,22 +2,12 @@
 # -*- ruby -*-
 
 require 'asciitable/numtable'
-require 'asciitable/data'
 require 'asciitable/tc'
 
 Sickill::Rainbow.enabled = true
 
 module ASCIITable
   class NumericTableTest < TestCase
-    class LongData < DefaultTableData
-      def initialize 
-        super 'number', :value
-        %w{ zero one two three four five six seven eight }.each_with_index do |number, idx|
-          add(number, idx)
-        end
-      end
-    end
-    
     def test_total_row
       table = NumericTable.new LongData.new, { :has_total_row => true }
       expected = [
@@ -144,7 +134,7 @@ module ASCIITable
       end
     end
 
-    def test_total_column
+    def test_total_column_no_span
       table = NumericTable.new WideNumberData.new, { :has_total_columns => true }
       
       expected = [
