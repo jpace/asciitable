@@ -96,9 +96,11 @@ module ASCIITable
       last_data_col = @cells.data_columns.last
       totcol = last_data_col + 1
 
+      set_value(totcol, 0, "total")
+
       (1 .. @cells.last_row).each do |row|
         (0 .. (@cells.data_cell_span - 1)).each do |offset|
-          rowcells = cells_for_row(row, offset, last_data_col)
+          rowcells = @cells.cells_for_row(row, offset, last_data_col)
           total = rowcells.map(&:value).inject(0) { |sum, num| sum + num }
           set_value(totcol + offset, row, total)
         end

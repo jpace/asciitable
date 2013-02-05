@@ -41,3 +41,7 @@ Thu Jan 31 17:37:23 2013
 Sun Feb  3 11:34:39 2013
 
   Refined options argument to Table.
+
+Mon Feb  4 19:53:10 2013
+
+  Added test for add_total_columns.

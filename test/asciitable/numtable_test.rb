@@ -143,5 +143,20 @@ module ASCIITable
         table.print
       end
     end
+
+    def test_total_column
+      table = NumericTable.new WideNumberData.new, { :has_total_columns => true }
+      
+      expected = [
+                  "|     type     |    first     |    second    |    third     |    fourth    |    total     |",
+                  "| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |",
+                  "| odd          | 11           | 17           | 3            | 7            | 38           |",
+                  "| even         | 8            | 4            | 6            | 12           | 30           |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
   end
 end
