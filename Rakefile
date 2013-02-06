@@ -2,6 +2,7 @@ require 'rubygems'
 require 'fileutils'
 require 'rake/testtask'
 require 'rubygems/package_task'
+require 'rspec/core/rake_task'
 
 task :default => :test
 
@@ -34,3 +35,5 @@ Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = true 
   pkg.need_tar_gz = true 
 end 
+
+RSpec::Core::RakeTask.new(:spec)

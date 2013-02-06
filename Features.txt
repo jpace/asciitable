@@ -45,3 +45,7 @@ Sun Feb  3 11:34:39 2013
 Mon Feb  4 19:53:10 2013
 
   Added test for add_total_columns.
+
+Tue Feb  5 18:28:07 2013
+
+  Began migrating to rspec.
