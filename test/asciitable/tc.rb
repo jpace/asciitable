@@ -5,7 +5,6 @@ require 'rubygems'
 require 'test/unit'
 require 'stringio'
 require 'asciitable/data'
-require 'asciitable/tc'
 
 Sickill::Rainbow.enabled = true
 
@@ -22,15 +21,21 @@ module ASCIITable
       str = sio.string
       $stdout = origout
 
-      puts "......................................................."
-      puts str
-      puts "......................................................."
+      if debug
+        puts "......................................................."
+        puts str
+        puts "......................................................."
+      end
       
       result = str.split "\n"
 
       (0 ... [ expected.size, result.size ].max).each do |idx|
         assert_equal expected[idx], result[idx], "idx: #{idx}"
       end
+    end
+
+    def debug
+      false
     end
 
     class DogData < DefaultTableData

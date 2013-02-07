@@ -151,9 +151,9 @@ module ASCIITable
 
     class NumberPairData < DefaultTableData
       def initialize 
-        super 'type', :first, :second, :third, :fourth
-        add 'odd', [ 11, 0.2 ], [ 3, 1.3 ], [ 23, 1.4 ], [ 41, 3.2 ]
-        add 'even', [ 14, 2.0 ], [ 8, 1.1 ], [ 22, 0.4 ], [ 24, 3.0 ]
+        super 'type', :first, :second, :third
+        add 'odd', [ 11, 0.2 ], [ 3, 1.3 ], [ 23, 1.4 ]
+        add 'even', [ 14, 2.0 ], [ 8, 1.1 ], [ 22, 0.4 ]
       end
       
       def value key, field, index
@@ -163,12 +163,12 @@ module ASCIITable
 
     def test_total_column_cell_span
       table = NumericTable.new NumberPairData.new, { :has_total_columns => true, :cell_options => { :span => 2  } }
-      
+
       expected = [
-                  "|     type     |    first     |    second    |    third     |    fourth    |    total     |",
-                  "| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |",
-                  "| odd          | 11           | 17           | 3            | 7            | 38           |",
-                  "| even         | 8            | 4            | 6            | 12           | 30           |",
+                  "|     type     |            first            |           second            |            third            |            total            |",
+                  "| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |",
+                  "| odd          | 11           | 0.2          | 3            | 1.3          | 23           | 1.4          | 37           | 2.9          |",
+                  "| even         | 14           | 2.0          | 8            | 1.1          | 22           | 0.4          | 44           | 3.5          |",
                  ]
 
       run_output_test(expected) do

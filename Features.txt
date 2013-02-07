@@ -49,3 +49,7 @@ Mon Feb  4 19:53:10 2013
 Tue Feb  5 18:28:07 2013
 
   Began migrating to rspec.
+
+Wed Feb  6 19:59:40 2013
+
+  Fixed total column for multiple indices.

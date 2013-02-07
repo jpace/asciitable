@@ -97,7 +97,7 @@ module ASCIITable
       totcol = last_data_col + 1
 
       set_value(totcol, 0, "total")
-      # @cells.cell(totcol, 0).span = @cells.data_cell_span
+      @cells.cell(totcol, 0).span = totcol + @cells.data_cell_span - 1
 
       (1 .. @cells.last_row).each do |row|
         (0 .. (@cells.data_cell_span - 1)).each do |offset|
