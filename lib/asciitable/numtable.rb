@@ -2,6 +2,7 @@
 # -*- ruby -*-
 
 require 'asciitable/table'
+require 'pp'
 
 module ASCIITable
   class NumericTable < Table
@@ -14,7 +15,7 @@ module ASCIITable
       avgrow = args[:has_average_row]
 
       if totrow || avgrow
-        add_separator_row '='
+        append_separator_row '='
         if totrow
           add_stat_row(TotalRow)
         end
@@ -52,12 +53,12 @@ module ASCIITable
 
     def highlight_cells_in_row row, offset
       datacells = @cells.cells_for_row(row, offset)
-      highlight_cells(datacells)
+      highlight_cells datacells
     end
 
     def highlight_cells cells
       vals = sort_values(cells)
-
+      
       colors = @highlight_colors
 
       cells.each do |cell|

@@ -5,25 +5,25 @@ require 'rubygems'
 require 'riel'
 
 module ASCIITable
-  class Columns < Array
+  class Columns
     def initialize default_cell_width, default_align
       @default_cell_width = default_cell_width
       @default_align = default_align
-      super()
+      @columns = Array.new
     end
 
     def width col
-      ((c = self[col]) && c.width) || @default_cell_width
+      ((c = @columns[col]) && c.width) || @default_cell_width
     end
 
     def align col
-      ((c = self[col]) && c.align) || @default_align
+      ((c = @columns[col]) && c.align) || @default_align
     end
 
     def [] col
-      column = super
+      column = @columns[col]
       unless column
-        column = self[col] = Column.new(col, @default_cell_width, @default_align)
+        column = @columns[col] = Column.new(col, @default_cell_width, @default_align)
       end
       column
     end

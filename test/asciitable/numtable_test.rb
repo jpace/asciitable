@@ -119,7 +119,7 @@ module ASCIITable
       end
     end
     
-    def test_highlight_max_cells_in_row
+    def test_highlight_max_cells_in_row_no_total_column
       table = NumericTable.new WideNumberData.new, { :highlight_max_cells_in_rows => true, :highlight_colors => [ :red, :cyan, :magenta ] }
       
       expected = [
@@ -169,6 +169,26 @@ module ASCIITable
                   "| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |",
                   "| odd          | 11           | 0.2          | 3            | 1.3          | 23           | 1.4          | 37           | 2.9          |",
                   "| even         | 14           | 2.0          | 8            | 1.1          | 22           | 0.4          | 44           | 3.5          |",
+                 ]
+
+      run_output_test(expected) do
+        table.print
+      end
+    end
+
+    def test_highlight_max_cells_in_row_with_total_columns
+      options = Hash.new
+      options[:has_total_columns] = true
+      options[:highlight_max_cells_in_rows] = true
+      options[:cell_options] = { :span => 2  }
+      options[:highlight_colors] = [ :red, :yellow ]
+      table = NumericTable.new NumberPairData.new, options
+
+      expected = [
+                  "|     type     |            first            |           second            |            third            |            total            |",
+                  "| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |",
+                  "| odd          | [33m11          [0m | 0.2          | 3            | [33m1.3         [0m | [31m23          [0m | [31m1.4         [0m | 37           | 2.9          |",
+                  "| even         | [33m14          [0m | [31m2.0         [0m | 8            | [33m1.1         [0m | [31m22          [0m | 0.4          | 44           | 3.5          |",
                  ]
 
       run_output_test(expected) do

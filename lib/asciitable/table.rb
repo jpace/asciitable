@@ -41,7 +41,7 @@ module ASCIITable
       @separator_rows.insert(rownum, char)
     end
 
-    def add_separator_row char = '-'
+    def append_separator_row char = '-'
       @separator_rows.append(@cells.last_row, char)
     end
 

@@ -53,3 +53,7 @@ Tue Feb  5 18:28:07 2013
 Wed Feb  6 19:59:40 2013
 
   Fixed total column for multiple indices.
+
+Thu Feb  7 19:12:04 2013
+
+  Added test for highlight with total.

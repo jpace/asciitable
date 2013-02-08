@@ -5,7 +5,7 @@ require 'rubygems'
 require 'riel'
 
 module ASCIITable
-  class Cells < Array
+  class Cells
     attr_reader :data_cell_span
     
     def initialize cellcls, data, data_cell_span = 1, default_value = ""
@@ -14,7 +14,7 @@ module ASCIITable
       @data_cell_span = data_cell_span
       @default_value = default_value
 
-      super()
+      @cells = Array.new
 
       set_headings
       set_from_data
@@ -22,28 +22,28 @@ module ASCIITable
 
     def add col, row, value
       cl = @cellcls.new(col, row, value)
-      self << cl
+      @cells << cl
       cl
     end
 
     def last_column
-      map(&:column).max
+      @cells.map(&:column).max
     end
 
     def last_row
-      map(&:row).max
+      @cells.map(&:row).max
     end
 
     def cells_in_column col
-      select { |cell| cell.column == col }
+      @cells.select { |cell| cell.column == col }
     end
 
     def cells_in_row row
-      select { |cell| cell.row == row }
+      @cells.select { |cell| cell.row == row }
     end
 
     def find_cell col, row
-      detect { |c| c.column == col && c.row == row }
+      @cells.detect { |c| c.column == col && c.row == row }
     end
 
     def cell col, row, value = @default_value
