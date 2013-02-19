@@ -44,10 +44,10 @@ module ASCIITable
 
     def background? color
       if color.kind_of? Symbol
-        bg = get_background_color(color)
+        bg = get_background_color color
         bg && bg.to_sym
       else
-        get_background_color(color)
+        get_background_color color
       end
     end
 
@@ -78,9 +78,9 @@ module ASCIITable
 
       @colors.each do |cl|
         if bg = background?(cl)
-          str = str.background(bg)
+          str = str.background bg
         else
-          str = str.color(cl)
+          str = str.color cl
         end
       end
       
@@ -91,7 +91,7 @@ module ASCIITable
   class BannerCell < Cell
     def initialize col, row, char
       @char = char
-      super(col, row)
+      super col, row
     end
 
     def _value width
