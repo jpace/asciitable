@@ -2,7 +2,7 @@
 # -*- ruby -*-
 
 require 'rubygems'
-require 'riel/log'
+require 'logue/log'
 require 'asciitable/cell'
 require 'asciitable/column'
 require 'asciitable/row'
@@ -13,7 +13,7 @@ require 'asciitable/columns'
 
 module ASCIITable
   class Table
-    include Loggable
+    include Logue::Loggable
 
     attr_reader :cells
 

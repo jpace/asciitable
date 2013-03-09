@@ -1,9 +1,6 @@
 #!/usr/bin/ruby -w
 # -*- ruby -*-
 
-require 'rubygems'
-require 'riel'
-
 module ASCIITable
   class SeparatorRows < Hash
     # sets a separator for the row preceding +rownum+. Does not change the

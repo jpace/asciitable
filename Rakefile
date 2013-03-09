@@ -28,7 +28,9 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = true
   s.extra_rdoc_files = [ "README.md" ]
 
+  s.add_dependency "riel", ">= 1.1.16"
   s.add_dependency "rainbow", ">= 1.1.4"
+  s.add_dependency "logue", ">= 0.0.1"
 end
  
 Gem::PackageTask.new(spec) do |pkg| 

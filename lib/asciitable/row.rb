@@ -2,12 +2,16 @@
 # -*- ruby -*-
 
 require 'rubygems'
-require 'riel/log'
+require 'logue/log'
 require 'riel/enumerable'
+
+class Array
+  include RIEL::EnumerableExt
+end
 
 module ASCIITable
   class Row
-    include Loggable
+    include Logue::Loggable
     
     def print values
       $stdout.puts "| " + values.join(" | ") + " |"

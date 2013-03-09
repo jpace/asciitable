@@ -57,3 +57,7 @@ Wed Feb  6 19:59:40 2013
 Thu Feb  7 19:12:04 2013
 
   Added test for highlight with total.
+
+Sat Mar  9 17:06:51 2013
+
+  Refined dependency on RIEL and Logue.

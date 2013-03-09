@@ -1,9 +1,6 @@
 #!/usr/bin/ruby -w
 # -*- ruby -*-
 
-require 'rubygems'
-require 'riel/log'
-
 module ASCIITable
   class Column
     attr_accessor :num

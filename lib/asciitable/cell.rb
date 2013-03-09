@@ -2,12 +2,12 @@
 # -*- ruby -*-
 
 require 'rubygems'
-require 'riel/log'
+require 'logue/loggable'
 require 'rainbow'
 
 module ASCIITable
   class Cell
-    include Loggable
+    include Logue::Loggable
     
     attr_reader :column
     attr_reader :row
